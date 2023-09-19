@@ -1,0 +1,918 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "id": "7001ace5",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import pandas as pd"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "572014c1",
+   "metadata": {},
+   "source": [
+    "# パスの設定"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "d1ecfb6c",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "BASE_DIR = Path(\"/content/drive/MyDrive/機械学習/sake\")\n",
+    "DATA_DIR = BASE_DIR\n",
+    "FEATURES_DIR = BASE_DIR.joinpath(\"features\")\n",
+    "cite_filepath = DATA_DIR.joinpath(\"cite.csv\")\n",
+    "train_filepath = DATA_DIR.joinpath(\"train.csv\")\n",
+    "test_filepath = DATA_DIR.joinpath(\"test.csv\")\n",
+    "sub_filepath = DATA_DIR.joinpath(\"sample_submission.csv\")\n",
+    "df_cite = pd.read_csv(cite_filepath)\n",
+    "df_train = pd.read_csv(train_filepath)\n",
+    "df_test = pd.read_csv(test_filepath)\n",
+    "df_sub = pd.read_csv(sub_filepath)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "b3db4b2b",
+   "metadata": {},
+   "source": [
+    "## パスの利用（dataframe挿入)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "b15f510f",
+   "metadata": {},
+   "outputs": [
+    {
+     "ename": "NameError",
+     "evalue": "name 'df_cite' is not defined",
+     "output_type": "error",
+     "traceback": [
+      "\u001b[1;31m---------------------------------------------------------------------------\u001b[0m",
+      "\u001b[1;31mNameError\u001b[0m                                 Traceback (most recent call last)",
+      "Cell \u001b[1;32mIn[2], line 1\u001b[0m\n\u001b[1;32m----> 1\u001b[0m cite_filenames \u001b[38;5;241m=\u001b[39m \u001b[43mdf_cite\u001b[49m[\u001b[38;5;124m\"\u001b[39m\u001b[38;5;124mcite_filename\u001b[39m\u001b[38;5;124m\"\u001b[39m]\u001b[38;5;241m.\u001b[39mto_list()\n\u001b[0;32m      2\u001b[0m df_cite[\u001b[38;5;124m\"\u001b[39m\u001b[38;5;124mpath\u001b[39m\u001b[38;5;124m\"\u001b[39m] \u001b[38;5;241m=\u001b[39m [\u001b[38;5;28mstr\u001b[39m(CITE_IMG_DIR\u001b[38;5;241m.\u001b[39mjoinpath(filename)) \u001b[38;5;28;01mfor\u001b[39;00m filename \u001b[38;5;129;01min\u001b[39;00m cite_filenames]\n",
+      "\u001b[1;31mNameError\u001b[0m: name 'df_cite' is not defined"
+     ]
+    }
+   ],
+   "source": [
+    "cite_filenames = df_cite[\"cite_filename\"].to_list()\n",
+    "df_cite[\"path\"] = [str(CITE_IMG_DIR.joinpath(filename)) for filename in cite_filenames]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "bb341a2f",
+   "metadata": {},
+   "source": [
+    "#　ファイル読み込み"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "a9060424",
+   "metadata": {},
+   "source": [
+    "## 一つのファイル"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "46915b15",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "df =pd.read_csv('')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "7463bae3",
+   "metadata": {},
+   "source": [
+    "## 1つのファイルに複数フォルダ"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "beb49099",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "for i in glob.glob(\"train/*.csv*\"):\n",
+    "    tmp_df=pd.read_csv(i)\n",
+    "    df = pd.concat([df, tmp_df],ignore_index=True)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "ee406a8d",
+   "metadata": {},
+   "source": [
+    "# 欠損値処理"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "f363ac45",
+   "metadata": {},
+   "source": [
+    "## 行操作"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "3f7b5ebf",
+   "metadata": {},
+   "source": [
+    "### 全て欠損値の行を削除"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "b42777b3",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "df.dropna(how='all', inplace=True)\n",
+    "df.reset_index(drop=True, inplace=True)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "8b122ce1",
+   "metadata": {},
+   "source": [
+    "### 欠損値の1つでもある行を削除"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "16f7651e",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "df.dropna(inplace=True)\n",
+    "df.reset_index(drop=True, inplace=True)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "b7319cd5",
+   "metadata": {},
+   "source": [
+    "## 列操作"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "8a0b3742",
+   "metadata": {},
+   "source": [
+    "### 全て欠損値の列を削除"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "ce94dd62",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "df.dropna(axis=1, how='all', inplace=True)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "45272959",
+   "metadata": {},
+   "source": [
+    "# 単一のユニーク数の列を削除"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "id": "51c6a8f2",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "df = pd.DataFrame({'A': [1, 2, 3, 4],\n",
+    "                   'B': [1, 1, 1, 1],\n",
+    "                   'C': [1, 2, 3, 4]})"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "id": "f930ab58",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "df = df.loc[:, df.nunique() != 1]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "id": "0fe41e1b",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<bound method DataFrame.info of    A  C\n",
+       "0  1  1\n",
+       "1  2  2\n",
+       "2  3  3\n",
+       "3  4  4>"
+      ]
+     },
+     "execution_count": 8,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df.info"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "08147df6",
+   "metadata": {},
+   "source": [
+    "# いくつかの文字を抽出"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "687f2fd5",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "df['列名'] = df['列名'].apply(lambda x: int(str(x)[:4]))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "b59f9792",
+   "metadata": {},
+   "source": [
+    "# 複数列のgroupby(複数列ではxfeat使えない)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "96c2d93a",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "agg_cols = ['mean_temp', 'max_temp', 'min_temp', 'sum_rain', 'sun_time', 'mean_humid']\n",
+    "gb_df = wea_df.groupby(['area', 'year', 'month'])[agg_cols].agg(['mean','max','min']).reset_index()\n",
+    "\n",
+    "new_cols = []\n",
+    "for col1, col2 in gb_df.columns:\n",
+    "    if col2:\n",
+    "        new_cols.append(col2+'_'+col1)\n",
+    "    else:\n",
+    "        new_cols.append(col1)\n",
+    "\n",
+    "gb_df.columns = new_cols\n",
+    "gb_df"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "3233128a",
+   "metadata": {},
+   "source": [
+    "# sklearnエンコーディング"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "27a9a438",
+   "metadata": {},
+   "source": [
+    "## エンコーディング"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "76a250aa",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from sklearn.preprocessing import LabelEncoder\n",
+    "encoder = LabelEncoder()\n",
+    "encoded_categories = encoder.fit_transform(categories)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "9c20002a",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "encoded_df = pd.get_dummies(df, columns=['color'])"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "352bab02",
+   "metadata": {},
+   "source": [
+    "# xfeatの操作"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "01dcfd7b",
+   "metadata": {},
+   "source": [
+    "## aggrecation操作"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "0897ef78",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "df_edit=df.copy()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "f1d39a1a",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "agg_dfs = []\n",
+    "\n",
+    "def get_agg_df(df, group_col):\n",
+    "\n",
+    "    agg_df, agg_cols = aggregation(df,\n",
+    "                        group_key=group_col,\n",
+    "                        group_values=['',''],\n",
+    "                        agg_methods=['count', 'mean', 'min', 'max'],\n",
+    "                        )\n",
+    "\n",
+    "    return agg_df[agg_cols]\n",
+    "\n",
+    "group_col = '市区町村名'\n",
+    "agg_dfs.append(get_agg_df(df_edit1, group_col))\n",
+    "agg_dfs[0].head(2)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "650a2d82",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "df_edit2=pd.concat([df_edit1]+agg_dfs,axis=1)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "8661411d",
+   "metadata": {},
+   "source": [
+    "## combi操作"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "a786bcdf",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "df_edit=df.copy()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "3ef0eb9d",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "concat_combi = ConcatCombination(drop_origin=True, r=2)\n",
+    "concat_df=concat_combi.fit_transform(df_edit1[['都道府県名', '最寄駅：距離（分）','間取り']].astype(str))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "8f66ba12",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "df_edit2=pd.concat([df_edit1,concat_df],axis=1)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "717b159a",
+   "metadata": {},
+   "source": [
+    "## ArithmeticCombinationsの適用"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "e9970a2e",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "df_edit=df.copy()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "ca04757c",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "### ArithmeticCombinationsの適用\n",
+    "arithmetic_combinations = ArithmeticCombinations(\n",
+    "    operator='*',\n",
+    "    drop_origin=True,  \n",
+    "    # 元の特徴量を削除するかどうか\n",
+    "\n",
+    "    # 使用する算術演算子\n",
+    "    r=2,\n",
+    "    # 算術演算子の数（ここでは2つの特徴量を組み合わせる）\n",
+    ")\n",
+    "output_df = arithmetic_combinations.fit_transform(df_edit1[['市区町村名_te', '面積（㎡）']])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "e097a9fe",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "df_edit2=pd.concat([df_edit1,concat_df],axis=1)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "ba8ef6db",
+   "metadata": {},
+   "source": [
+    "## SelectNumerical"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "7adbf083",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "encoder = Pipeline(\n",
+    "    [\n",
+    "        SelectNumerical(),\n",
+    "    ]\n",
+    ")\n",
+    "\n",
+    "num_comb_df = encoder.fit_transform(df_edit2)\n",
+    "num_comb_df.head(2)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "e7930a18",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "pipe = Pipeline([\n",
+    "    SelectCategorical(),  # カテゴリカルデータの選択\n",
+    "    LabelEncoder(output_suffix=''),  # ラベルエンコーディング\n",
+    "    LambdaEncoder(encoder=lambda x: pd.get_dummies(x, prefix='color')),  # ワンホットエンコーディング\n",
+    "])\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "0d268a1f",
+   "metadata": {},
+   "source": [
+    "## SelectCategorical"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "87a2b6a8",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "encoder = Pipeline([\n",
+    "    SelectCategorical(),\n",
+    "    LabelEncoder(output_suffix=\"\"),\n",
+    "])\n",
+    "le_df = encoder.fit_transform(df_edit2)\n",
+    "le_df.head(2)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "99f18475",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "df_dummy=pd.concat([num_comb_df,le_df],axis=1)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "353d6192",
+   "metadata": {},
+   "source": [
+    "# Xgboost"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "ff2d94af",
+   "metadata": {},
+   "outputs": [
+    {
+     "ename": "NameError",
+     "evalue": "name 'X_train' is not defined",
+     "output_type": "error",
+     "traceback": [
+      "\u001b[1;31m---------------------------------------------------------------------------\u001b[0m",
+      "\u001b[1;31mNameError\u001b[0m                                 Traceback (most recent call last)",
+      "Cell \u001b[1;32mIn[1], line 15\u001b[0m\n\u001b[0;32m      6\u001b[0m xgb_params \u001b[38;5;241m=\u001b[39m {\n\u001b[0;32m      7\u001b[0m     \u001b[38;5;124m'\u001b[39m\u001b[38;5;124mobjective\u001b[39m\u001b[38;5;124m'\u001b[39m: \u001b[38;5;124m'\u001b[39m\u001b[38;5;124mreg:linear\u001b[39m\u001b[38;5;124m'\u001b[39m,\n\u001b[0;32m      8\u001b[0m     \u001b[38;5;124m'\u001b[39m\u001b[38;5;124mlearning_rate\u001b[39m\u001b[38;5;124m'\u001b[39m: \u001b[38;5;241m0.1\u001b[39m,\n\u001b[1;32m   (...)\u001b[0m\n\u001b[0;32m     11\u001b[0m     \u001b[38;5;124m'\u001b[39m\u001b[38;5;124mseed\u001b[39m\u001b[38;5;124m'\u001b[39m: \u001b[38;5;241m123\u001b[39m\n\u001b[0;32m     12\u001b[0m }\n\u001b[0;32m     14\u001b[0m scaler \u001b[38;5;241m=\u001b[39m StandardScaler()\n\u001b[1;32m---> 15\u001b[0m X_train_scaled \u001b[38;5;241m=\u001b[39m scaler\u001b[38;5;241m.\u001b[39mfit_transform(\u001b[43mX_train\u001b[49m)\n\u001b[0;32m     16\u001b[0m X_test_scaled \u001b[38;5;241m=\u001b[39m scaler\u001b[38;5;241m.\u001b[39mtransform(X_test)\n\u001b[0;32m     17\u001b[0m y_train \u001b[38;5;241m=\u001b[39m np\u001b[38;5;241m.\u001b[39marray(y_train)  \u001b[38;5;66;03m# Convert y_train to numpy array\u001b[39;00m\n",
+      "\u001b[1;31mNameError\u001b[0m: name 'X_train' is not defined"
+     ]
+    }
+   ],
+   "source": [
+    "import xgboost as xgb\n",
+    "from sklearn.preprocessing import StandardScaler\n",
+    "from sklearn.metrics import mean_squared_error, mean_absolute_error\n",
+    "import numpy as np\n",
+    "\n",
+    "xgb_params = {\n",
+    "    'objective': 'reg:linear',\n",
+    "    'learning_rate': 0.1,\n",
+    "    'reg_lambda': 1,\n",
+    "    'max_depth': 8,\n",
+    "    'seed': 123\n",
+    "}\n",
+    "\n",
+    "scaler = StandardScaler()\n",
+    "X_train_scaled = scaler.fit_transform(X_train)\n",
+    "X_test_scaled = scaler.transform(X_test)\n",
+    "y_train = np.array(y_train)  # Convert y_train to numpy array\n",
+    "y_test = np.array(y_test)  # Convert y_test to numpy array\n",
+    "\n",
+    "dtrain = xgb.DMatrix(X_train_scaled, label=y_train,feature_names=X_train.columns)\n",
+    "dtest = xgb.DMatrix(X_test_scaled, label=y_test,feature_names=X_train.columns)  # Provide labels for evaluation\n",
+    "\n",
+    "evals = [(dtrain, 'train'), (dtest, 'eval')]\n",
+    "\n",
+    "model = xgb.train(xgb_params, dtrain, num_boost_round=400,\n",
+    "                  early_stopping_rounds=20, evals=evals, verbose_eval=True)\n",
+    "\n",
+    "y_pred_train = model.predict(dtrain)\n",
+    "rmse_train = np.sqrt(mean_squared_error(y_train, y_pred_train))\n",
+    "print(\"Train RMSE:\", rmse_train)\n",
+    "\n",
+    "y_pred_test = model.predict(dtest)\n",
+    "rmse_test = np.sqrt(mean_squared_error(y_test, y_pred_test))\n",
+    "mae_test = mean_absolute_error(y_test, y_pred_test)\n",
+    "print(\"Test RMSE:\", rmse_test)\n",
+    "print(\"Test MAE:\", mae_test)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "60d9664b",
+   "metadata": {},
+   "source": [
+    "# lightgbm"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "e40b3aef",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "SEED = 0\n",
+    "\n",
+    "params = {\n",
+    "    'objective': 'regression',\n",
+    "    'metric': 'mae',\n",
+    "    'num_leaves': 42,\n",
+    "    'max_depth': 7,\n",
+    "    \"feature_fraction\": 0.8,\n",
+    "    'subsample_freq': 1,\n",
+    "    \"bagging_fraction\": 0.95,\n",
+    "    'min_data_in_leaf': 2,\n",
+    "    'learning_rate': 0.1,\n",
+    "    \"boosting\": \"gbdt\",\n",
+    "    \"lambda_l1\": 0.1,\n",
+    "    \"lambda_l2\": 10,\n",
+    "    \"verbosity\": -1,\n",
+    "    \"random_state\": 42,\n",
+    "    \"num_boost_round\": 50000,\n",
+    "    \"early_stopping_rounds\": 100\n",
+    "}\n",
+    "\n",
+    "train_data = lgb.Dataset(train_x, label=train_y)\n",
+    "val_data = lgb.Dataset(val_x, label=val_y)\n",
+    "\n",
+    "model = lgb.train(\n",
+    "    params,\n",
+    "    train_data, \n",
+    "    categorical_feature = cat_cols,\n",
+    "    valid_names = ['train', 'valid'],\n",
+    "    valid_sets =[train_data, val_data], \n",
+    "    verbose_eval = 100,\n",
+    ")\n",
+    "\n",
+    "val_pred = model.predict(val_x, num_iteration=model.best_iteration)\n",
+    "score = mean_absolute_error(val_y, val_pred)\n",
+    "\n",
+    "pred_df = pd.DataFrame(sorted(zip(val_x.index, val_pred, val_y)), columns=['index', 'predict', 'actual'])\n",
+    "\n",
+    "feature_imp = pd.DataFrame(sorted(zip(model.feature_importance(), train_x.columns)), columns=['importance', 'feature'])\n",
+    "\n",
+    "print(f'score: {score:.4f}')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "3ea798b1",
+   "metadata": {},
+   "source": [
+    "# トレーニングデータの絞り込み"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "ef9190f9",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "kinds = test_df['kind'].unique()\n",
+    "train_df = train_df[train_df['kind'].isin(kinds)]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "2db2ef64",
+   "metadata": {},
+   "source": [
+    "# googlecolab"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "52888287",
+   "metadata": {},
+   "source": [
+    "## 準備　googledriveマウント"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "9ebddd0d",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# constants\n",
+    "HOME = Path(\"/content/drive/MyDrive/competition/nishika_sake\")\n",
+    "NOTEBOOK_NAME = requests.get(\"http://172.28.0.12:9000/api/sessions\").json()[0][\"name\"][:-6]\n",
+    "EXP_NAME = Config.name if Config.name is not None else NOTEBOOK_NAME\n",
+    "INPUTS = HOME / \"inputs\"  # input data\n",
+    "OUTPUTS = HOME / \"outputs\"\n",
+    "INTERMIDIATES = HOME / \"intermidiates\"  # intermidiate outputs\n",
+    "SUBMISSIONS = HOME / \"submissions\"\n",
+    "OUTPUTS_EXP = OUTPUTS / EXP_NAME\n",
+    "EXP_MODELS = OUTPUTS_EXP / \"models\"\n",
+    "EXP_REPORTS = OUTPUTS_EXP / \"reports\"\n",
+    "EXP_PREDS = OUTPUTS_EXP / \"predictions\"\n",
+    "SCRIPTS = HOME / \"scripts\"\n",
+    "\n",
+    "CITE_IMAGES = Path(\"cite_images\")\n",
+    "QUERY_IMAGES = Path(\"query_images\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "8b5f913a",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def setup(Config):\n",
+    "    # mount\n",
+    "    from google.colab import drive\n",
+    "    CONTENT_DRIVE = Path(\"/content/drive\")\n",
+    "    if not CONTENT_DRIVE.is_dir():\n",
+    "        drive.mount(CONTENT_DRIVE.as_posix())\n",
+    "        # for d in [...]: d.mkdir(parents=True, exist_ok=True): ループを使って、事前に定義されたディレクトリパスを順に処理しています。mkdir 関数を使用して、ディレクトリを作成しています。\n",
+    "# parents=True は親ディレクトリも存在しなければ作成することを示し、exist_ok=True は既にディレクトリが存在している場合にエラーを出さないようにします。\n",
+    "    for d in [\n",
+    "        HOME,\n",
+    "        INPUTS,\n",
+    "        SUBMISSIONS,\n",
+    "        EXP_MODELS,\n",
+    "        EXP_REPORTS,\n",
+    "        EXP_PREDS,\n",
+    "        INTERMIDIATES,\n",
+    "        SCRIPTS,\n",
+    "    ]:\n",
+    "        d.mkdir(parents=True, exist_ok=True)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "af26f728",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "#outputのとこにログファイル\n",
+    "LOGGER = Logger(OUTPUTS_EXP.as_posix())\n",
+    "wandb.login()  # need wandb account\n",
+    "DEVICE = torch.device(\"cuda\" if torch.cuda.is_available() else \"cpu\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "4b5c2a7e",
+   "metadata": {},
+   "source": [
+    "## zip開封"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "fd75f531",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# content 直下で解凍 (ターミナルで実行が良さそう)\n",
+    "if not QUERY_IMAGES.is_dir():\n",
+    "    #Windowsのファイルパスを POSIX スタイル（スラッシュ / 区切り）に変換するために使われることが多いです。\n",
+    "    query_images = (INPUTS / \"query_images.zip\").as_posix()\n",
+    "    #cpファイルのコピー\n",
+    "    ! cp $query_images .\n",
+    "    # ! cp /content/drive/MyDrive/competition/nishika_sake/inputs/query_images.zip .\n",
+    "    ! unzip ./query_images.zip\n",
+    "\n",
+    "if not CITE_IMAGES.is_dir():\n",
+    "    cite_images = (INPUTS / \"cite_images.zip\").as_posix()\n",
+    "    ! cp $cite_images .\n",
+    "    # ! cp /content/drive/MyDrive/competition/nishika_sake/inputs/cite_images.zip .\n",
+    "    ! unzip ./cite_images.zip"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "900ec07d",
+   "metadata": {},
+   "source": [
+    "## データ読み込み"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "64559876",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# load raw data\n",
+    "train_df = pd.read_csv(INPUTS / \"train.csv\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "69a81ad1",
+   "metadata": {},
+   "source": [
+    "## ラベル作成"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "d5cc4c5f",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def make_train_label(train_df) -> pd.DataFrame:\n",
+    "    le = LabelEncoder()\n",
+    "    train_df[\"brand_id_label\"] = le.fit_transform(train_df[\"brand_id\"])\n",
+    "    train_df[\"meigara_label\"] = le.fit_transform(train_df[\"meigara\"])\n",
+    "\n",
+    "    return train_df"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "15c56a36",
+   "metadata": {},
+   "source": [
+    "## データフレームのパス列の作成"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "8644dbd7",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def make_filepath(input_df):\n",
+    "    def join_path(dirpath, filename):\n",
+    "        return (dirpath / filename).as_posix()\n",
+    "#assign データフレームに新しい列を追加\n",
+    "#lambda x: ...: ラムダ関数（無名関数）を定義しています。x は filename 列の各要素を示します。\n",
+    "# このラムダ関数は、条件に基づいてファイルパスを生成するために使用されます。 \"2\" の場合は QUERY_IMAGES\n",
+    "    output_df = input_df.assign(\n",
+    "        filepath=input_df[\"filename\"].apply(\n",
+    "            lambda x: join_path(QUERY_IMAGES, x) if str(x)[0] == \"2\" else join_path(CITE_IMAGES, x)\n",
+    "        )\n",
+    "    )\n",
+    "    return output_df"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.9.6"
+  },
+  "toc": {
+   "base_numbering": 1,
+   "nav_menu": {},
+   "number_sections": true,
+   "sideBar": true,
+   "skip_h1_title": false,
+   "title_cell": "Table of Contents",
+   "title_sidebar": "Contents",
+   "toc_cell": false,
+   "toc_position": {},
+   "toc_section_display": true,
+   "toc_window_display": true
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
